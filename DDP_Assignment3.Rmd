@@ -1,0 +1,74 @@
+---
+title: "Shiny Application: Clustering Pitch Presentation"
+date: "Monday, January 20, 2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE,message=FALSE,warning=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	cache = TRUE,
+	tidy = TRUE,
+	tidy.opts = list(width.cutoff = 60)
+)
+```
+
+## Introduction{.smaller}
+
+This web page consists of an html format presentation. The presentation is written in R Markdown. This work was done on Monday, January 20, 2020.
+
+This presentation will provide details on an interactive Shiny application. This application allows users to perform realtime clustering analysis on a data set.
+
+The Shiny application was uploaded to shinyapps.io by RStudio using the 'rsconnect' function in R.
+
+## Application Details{.smaller}
+
+This application deploys k-means as a clustering method using the built-in 'kmeans' function in R.
+
+This application uses the 'rock' dataset in R. This dataset consists of measurements on 48 rock samples from a petroleum reservoir. Twelve core samples from petroleum reservoirs were sampled by 4 cross-sections. Each core sample was measured for permeability, and each cross-section has total area of pores, total perimeter of pores, and shape. The four numeric features in the dataset are described below.
+
+'area' - area of pores space, in pixels out of 256 by 256
+
+'peri' - perimeter in pixels
+
+'shape' - perimeter/sqrt(area)
+
+'perm' - permeability of core sample
+
+## Links and Usage{.smaller}
+
+The Shiny application is hosted at the following link.
+
+https://pvb11.shinyapps.io/shinyapp/
+
+This clustering application is interactive. The user can select which variables to compare, as well as the number of clusters to display.
+
+All of the R code used for this project is found in the following git repository in the server.R and ui.R files. Users can also find complete documentation and other files in this repository.
+
+https://github.com/pvb11/Course9_Assignment3
+
+## Code Display{.smaller}
+
+Here is a look at the server.R calculations that are being performed.
+
+```{r echo=FALSE}
+function(input, output, session) {
+  selectedData <- reactive({
+    rock[, c(input$xcol, input$ycol)]
+  })
+  clusters <- reactive({
+    kmeans(selectedData(), input$clusters)
+  })
+  output$plot1 <- renderPlot({
+    palette(c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3",
+              "#FF7F00", "#FFFF33", "#A65628", "#F781BF", "#999999"))
+    par(mar = c(5.1, 4.1, 0, 1))
+    plot(selectedData(),
+         col = clusters()$cluster,
+         pch = 20, cex = 3)
+    points(clusters()$centers, pch = 4, cex = 4, lwd = 4)
+  })
+}
+```
